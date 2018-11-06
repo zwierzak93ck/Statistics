@@ -62,7 +62,7 @@ namespace StatisticsWebAPI.Controllers
         [AllowAnonymous]
         public IActionResult Test()
         {
-            return Ok("test");
+            return Ok("test2");
         }
     }
 }
