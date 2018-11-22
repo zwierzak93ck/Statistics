@@ -11,6 +11,7 @@ namespace StatisticsWebAPI.Services
 {
     public class UserService
     {
+        /*
         public User Register(DataBaseContext dbContext, User user, string password)
         {
             string passwordHash;
@@ -25,18 +26,31 @@ namespace StatisticsWebAPI.Services
 
             return user;
         }
+        */
 
         public User Authenticate(DataBaseContext dbContext, string userName, string password)
         {
 
             User user = dbContext.Users.SingleOrDefault(u => u.UserName == userName);
 
-            return (user == null) ? null :
-                !CheckPasswordHash(password, user.PasswordHash, user.PasswordSalt) ? null :
-                    user;
+            if (user == null)
+            {
+                return null;
+            }
+            else
+            {
+                if(!CheckPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                {
+                    return null;
+                }
+                return user;
+            }
+            //return (user == null) ? null :
+             //   !CheckPasswordHash(password, user.PasswordHash, user.PasswordSalt) ? null :
+               //     user;
         }
 
-        private static void GeneratePasswordHash(string password, out string passwordHash, out byte[] passwordSalt)
+        public void GeneratePasswordHash(string password, out string passwordHash, out byte[] passwordSalt)
         {
 
             passwordSalt = new byte[128 / 8];

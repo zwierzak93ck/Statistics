@@ -1,43 +1,60 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StatisticsWebAPI.Data;
 using StatisticsWebAPI.Data.Models;
 using StatisticsWebAPI.Helpers;
+using StatisticsWebAPI.Interfaces;
+using StatisticsWebAPI.Services;
 
 namespace Statistics
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+
+            var builder = new ConfigurationBuilder()
+        .SetBasePath(env.ContentRootPath)
+        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+            if (env.IsDevelopment())
+            {
+                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets<Startup>();
+            }
+
+            builder.AddEnvironmentVariables();
+            Configuration = builder.Build();
+
+            DataBaseSettings.ConnectionString = Configuration.GetSection("Settings:DataBaseSettings:ConnectionString").Value;
+
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // configure strongly typed settings objects
-            var appSettingsSection = Configuration.GetSection("AppSettings");
-            services.Configure<AppSettings>(appSettingsSection);
+            services.AddOptions();
+            var tokenSettingsSection = Configuration.GetSection("Settings:TokenSettings");
+            services.Configure<TokenSettings>(tokenSettingsSection);
 
-            // configure jwt authentication
-            AppSettings appSettings = appSettingsSection.Get<AppSettings>();
+            TokenSettings appSettings = tokenSettingsSection.Get<TokenSettings>();
             byte[] key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            
+            services.Configure<EmailSettings>(Configuration.GetSection("Settings:EmailSettings"));
 
             services.AddCors(options => {
                 options.AddPolicy("AllowAll", policy =>
@@ -45,7 +62,8 @@ namespace Statistics
                     policy.AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowAnyOrigin()
-                    .AllowCredentials();
+                    .AllowCredentials()
+                    .WithExposedHeaders("Token");
                 });
             });
 
@@ -56,7 +74,7 @@ namespace Statistics
                 .AddEntityFrameworkStores<DataBaseContext>()
                 .AddDefaultTokenProviders();
 
-
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.Configure<IISOptions>(options => { });
 
 
@@ -64,7 +82,7 @@ namespace Statistics
             {
                 auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(jwt =>
+            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, jwt =>
             {
                 jwt.RequireHttpsMetadata = false;
                 jwt.SaveToken = true;
@@ -76,6 +94,25 @@ namespace Statistics
                     ValidateAudience = false
                 };
             });
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequiredUniqueChars = 2;
+
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.AllowedForNewUsers = true;
+
+                options.User.RequireUniqueEmail = true;
+                options.SignIn.RequireConfirmedEmail = true;
+            });
+
+            services.AddTransient<IEmailSender, AuthMessageService>();
 
             services.AddMvc();
         }
