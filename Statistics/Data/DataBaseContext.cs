@@ -35,9 +35,9 @@ namespace StatisticsWebAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>()
-                .Property(p => p.PasswordSalt)
-                .HasColumnType("varbinary(16)");
+            //modelBuilder.Entity<User>()
+            //    .Property(p => p.PasswordSalt)
+             //   .HasColumnType("varbinary(16)");
         }
     }
 }

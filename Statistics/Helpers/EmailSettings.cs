@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace StatisticsWebAPI.Helpers
 {
-    public class EmailSettings
+    public static class EmailSettings
     {
-        public string SmtpClientHost { get; set; }
-        public int SmtpClientPort { get; set; }
-        public string MailAddressEmail { get; set; }
-        public string MailAddressPassword { get; set; }
+        public static string SmtpClientHost { get; set; }
+        public static int SmtpClientPort { get; set; }
+        public static string MailAddressEmail { get; set; }
+        public static string MailAddressPassword { get; set; }
     }
 }

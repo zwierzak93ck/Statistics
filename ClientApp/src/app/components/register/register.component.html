@@ -1,0 +1,16 @@
+<mat-form-field>
+  <input matInput placeholder="Email" [formControl]="email" (input)="checkValidation()" email required>
+</mat-form-field>
+<mat-form-field>
+  <input matInput placeholder="Confirm Email" [formControl]="confirmEmail" (input)="checkValidation()" email required>
+</mat-form-field>
+
+<mat-form-field>
+  <input matInput placeholder="Password" [formControl]="password" (input)="checkValidation()" password required>
+</mat-form-field>
+<mat-form-field>
+  <input matInput placeholder="Confirm Password" [formControl]="confirmPassword" (input)="checkValidation()" password required>
+</mat-form-field>
+<button (click)="register()" [disabled]="!checkValidation()">
+ Register
+</button>

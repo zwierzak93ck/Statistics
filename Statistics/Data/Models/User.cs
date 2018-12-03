@@ -9,6 +9,6 @@ namespace StatisticsWebAPI.Data.Models
     public class User : IdentityUser
     {
         public string Password { get; set; }
-        public byte[] PasswordSalt { get; set; }
+        //public byte[] PasswordSalt { get; set; }
     }
 }

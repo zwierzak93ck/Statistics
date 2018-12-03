@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { HttpService } from './services/http-service.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +8,5 @@ import { HttpService } from './services/http-service.service';
 })
 export class AppComponent {
   title = 'ClientApp';
+  constructor(private router: Router) {}
 }

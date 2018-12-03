@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace StatisticsWebAPI.Helpers
 {
-    public class TokenSettings
+    public static class TokenSettings
     {
-        public string Secret { get; set; }
+        public static string Secret { get; set; }
     }
 }

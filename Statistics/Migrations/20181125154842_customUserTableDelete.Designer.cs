@@ -10,8 +10,8 @@ using System;
 namespace StatisticsWebAPI.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20181106180527_init")]
-    partial class init
+    [Migration("20181125154842_customUserTableDelete")]
+    partial class customUserTableDelete
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

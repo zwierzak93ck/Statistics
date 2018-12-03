@@ -1,0 +1,11 @@
+<mat-form-field>
+  <input matInput placeholder="Email" [formControl]="email" (input)="checkValidation()" email required>
+</mat-form-field>
+<mat-form-field>
+  <input matInput placeholder="Password" [formControl]="password" (input)="checkValidation()" password required>
+</mat-form-field>
+  <a routerLink="/register">signup</a>
+  <a routerLink="/forgotPassword">forgot password</a>
+<button (click)="login()" [disabled]="!checkValidation()">
+ Login
+</button>

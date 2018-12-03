@@ -40,6 +40,11 @@ namespace Statistics
             Configuration = builder.Build();
 
             DataBaseSettings.ConnectionString = Configuration.GetSection("Settings:DataBaseSettings:ConnectionString").Value;
+            TokenSettings.Secret = Configuration.GetSection("Settings:TokenSettings:Secret").Value;
+            EmailSettings.SmtpClientHost = Configuration.GetSection("Settings:EmailSettings:SmtpClientHost").Value;
+            EmailSettings.SmtpClientPort = Int32.Parse(Configuration.GetSection("Settings:EmailSettings:SmtpClientPort").Value);
+            EmailSettings.MailAddressEmail = Configuration.GetSection("Settings:EmailSettings:MailAddressEmail").Value;
+            EmailSettings.MailAddressPassword = Configuration.GetSection("Settings:EmailSettings:MailAddressPassword").Value;
 
         }
 
@@ -48,13 +53,15 @@ namespace Statistics
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            /*
             var tokenSettingsSection = Configuration.GetSection("Settings:TokenSettings");
             services.Configure<TokenSettings>(tokenSettingsSection);
 
             TokenSettings appSettings = tokenSettingsSection.Get<TokenSettings>();
-            byte[] key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            */
+            byte[] key = Encoding.ASCII.GetBytes(TokenSettings.Secret);
             
-            services.Configure<EmailSettings>(Configuration.GetSection("Settings:EmailSettings"));
+            //services.Configure<EmailSettings>(Configuration.GetSection("Settings:EmailSettings"));
 
             services.AddCors(options => {
                 options.AddPolicy("AllowAll", policy =>
@@ -102,7 +109,7 @@ namespace Statistics
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
-                options.Password.RequiredUniqueChars = 2;
+                options.Password.RequiredUniqueChars = 1;
 
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
                 options.Lockout.MaxFailedAccessAttempts = 10;

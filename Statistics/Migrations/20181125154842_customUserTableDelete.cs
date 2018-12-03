@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StatisticsWebAPI.Migrations
 {
-    public partial class init : Migration
+    public partial class customUserTableDelete : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

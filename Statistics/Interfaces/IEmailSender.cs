@@ -7,6 +7,6 @@ namespace StatisticsWebAPI.Interfaces
 {
     public interface IEmailSender
     {
-        Task SendEmailAsync(string email, string subject, string message, string smtpClientHost, int smtpClientPort, string mailAddressEmail, string mailAddressPassword);
+        Task SendEmailAsync(string email, string subject, string message);
     }
 }

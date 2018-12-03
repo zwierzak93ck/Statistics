@@ -16,17 +16,11 @@ namespace StatisticsWebAPI.Services
     {
         public AuthMessageService(){}
 
-        public Task SendEmailAsync(string email, string subject, string message, string smtpClientHost, int smtpClientPort, string mailAddressEmail, string mailAddressPassword)
+        public async Task SendEmailAsync(string email, string subject, string message)
         {
-            return Execute(subject, message, email, smtpClientHost, smtpClientPort, mailAddressEmail, mailAddressPassword);
-        }
-
-        public async Task Execute(string subject, string message, string email, string smtpClientHost, int smtpClientPort, string mailAddressEmail, string mailAddressPassword)
-        {
-           
             MailMessage mail = new MailMessage()
             {
-                From = new MailAddress(mailAddressEmail, "Test")
+                From = new MailAddress(EmailSettings.MailAddressEmail, "Test")
             };
 
             mail.To.Add(email);
@@ -35,13 +29,12 @@ namespace StatisticsWebAPI.Services
             mail.IsBodyHtml = true;
             mail.Priority = MailPriority.High;
 
-            using (SmtpClient smtp = new SmtpClient(smtpClientHost, smtpClientPort))
+            using (SmtpClient smtp = new SmtpClient(EmailSettings.SmtpClientHost, EmailSettings.SmtpClientPort))
             {
-                smtp.Credentials = new NetworkCredential(mailAddressEmail, mailAddressPassword);
+                smtp.Credentials = new NetworkCredential(EmailSettings.MailAddressEmail, EmailSettings.MailAddressPassword);
                 smtp.EnableSsl = true;
                 await smtp.SendMailAsync(mail);
             }
-
         }
     }
 }
